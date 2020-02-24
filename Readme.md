@@ -12,7 +12,9 @@ A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splun
 ## Update the Context
    ### Compartment ID, API URL, Container Registry
    ``` fn update context oracle.compartment-id <compartment-ocid> ```
+   
    ``` fn update context api-url https://functions.us-phoenix-1.oraclecloud.com ```
+   
    ``` fn update context registry [YOUR-TENANCY-NAMESPACE]/[YOUR-OCIR-REPO] ```
    
 
