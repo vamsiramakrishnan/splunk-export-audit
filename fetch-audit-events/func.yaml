@@ -1,0 +1,6 @@
+schema_version: 20180708
+name: fetch-audit-events
+version: 0.0.30
+runtime: python
+entrypoint: /python/bin/fdk /function/func.py handler
+memory: 512
