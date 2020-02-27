@@ -42,7 +42,7 @@ def handler(ctx, data: io.BytesIO=None):
 def get_audit_events(region, compartment, signer):
     audit_events=[]
     end_time = datetime.datetime.utcnow()
-    start_time = end_time + datetime.timedelta(days=0, seconds=0, microseconds=0, milliseconds=0, minutes=-2, hours=0, weeks=0)
+    start_time = end_time + datetime.timedelta(days=0, seconds=0, microseconds=0, milliseconds=0, minutes=-1, hours=0, weeks=0)
     audit_client = audit.audit_client.AuditClient(config={}, signer=signer)
     audit_client.base_client.set_region(region)
     result = pagination.list_call_get_all_results(audit_client.list_events,compartment_id=compartment,
