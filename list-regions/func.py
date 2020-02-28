@@ -12,6 +12,7 @@ def handler(ctx, data: io.BytesIO=None):
     compartment_url= os.environ['list_compartments_fn_url']
     wait_loop_time= os.environ['wait_loop_time']
     region_url= os.environ['list_regions_fn_url']
+    wait_loop_url=os.environ['wait_loop_fn_url']
     signer = auth.signers.get_resource_principals_signer()
     regions = get_regions(signer)
     session = requests.Session()

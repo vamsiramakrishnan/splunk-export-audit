@@ -2,6 +2,7 @@ import io
 import json
 from time import sleep
 from fdk import response
+import requests
 
 
 def handler(ctx, data: io.BytesIO=None):
@@ -11,7 +12,8 @@ def handler(ctx, data: io.BytesIO=None):
         next_fn_url = body.get("url")
     except (Exception, ValueError) as ex:
         print(str(ex))
-    sleep(sleep_time)
+    session = requests.Session()
+    sleep(int(sleep_time))
     try:
         x = session.get(next_fn_url, timeout=0.1)
     except:
