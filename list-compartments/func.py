@@ -18,10 +18,10 @@ def handler(ctx, data: io.BytesIO=None):
     session = requests.Session()
     for compartment in compartments:
         try:
-            x = session.post(audit_url, json={"region": region , "compartment": compartment['id']}, timeout=0.1)
+            x = session.post(audit_url, json={"region": region , "compartment": compartment['id']}, timeout=0.2)
         except:
             pass
-    return response.Response( ctx, response_data=json.dumps('{"Status":"Success"}'), headers={"Content-Type": "application/json"})
+    return response.Response( ctx, response_data=json.dumps({"Status": compartments}), headers={"Content-Type": "application/json"})
 
 def get_compartments(signer):
     """
