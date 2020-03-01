@@ -21,6 +21,30 @@ A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splun
 
 ![Flow of Fns calling each other](https://github.com/vamsiramakrishnan/splunk-export-audit/blob/master/media/DeepDiveL1.png)
 
+## Role of Each Component
+### Wait Loop 
+
+#### Description 
+--------------
+
+ 1. Reduce the number of function calls , by running a function that stays idle for a configurable amount of time.
+ 2. Accept a Wait Time and Accept a Url to call after waiting and execute.
+
+### List Regions
+
+#### Description
+---------------
+
+1. Every tenancy can be subscribed to a certain number of regions and this function lists those regions.
+
+
+|Parameter Name  |  Description|  Example |
+|--|--|--| 
+| list_compartments_fn_url | API gateway Endpoint/Route | https://dummy-url-apigateway.us-phoenix-1.oci.customer-oci.com/compartments/getcompartments
+| list_regions_fn_url | Https Link to self , to call after delay for self perpetuation| https://dummy-url-apigateway.us-phoenix-1.oci.customer-oci.com/regions/listregions
+| wait_loop_fn_url | The url of the Fn that makes a delayed Fn Call |https://dummy-url-apigateway.us-phoenix-1.oci.customer-oci.com/audit/auditlog
+| wait_loop_time | Time until next time list-regions Fn is called again | 0-100 Seconds
+
 ## [](https://github.com/vamsiramakrishnan/splunk-export-audit#components)Components
 
 -   The OCI Audit API is used to query for events every 2 minutes
@@ -56,3 +80,6 @@ fn update context oracle.compartment-id <compartment-ocid>
 fn update context api-url https://functions.us-phoenix-1.oraclecloud.com
 fn update context registry [YOUR-TENANCY-NAMESPACE]/[YOUR-OCIR-REPO]
 ```
+
+
+
