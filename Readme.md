@@ -127,7 +127,8 @@ These environment variables help call other functions. One after the other.
 |publish-to-splunk| splunk_hec_token| The Token that is unqiue to that HEC  | TOKEN
 |publish-to-splunk| splunk_index_name| The index into which you'd like these logs to get aggregated | main
 
-
+## Invoke !
+Invoke Once and the loop will stay active as long as the tenancy does continuously pushing events to Splunk . 
 
 ## Why we did what we did !
 
