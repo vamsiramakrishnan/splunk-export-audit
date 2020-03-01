@@ -3,4 +3,4 @@ name: fetch-audit-events
 version: 0.0.37
 runtime: python
 entrypoint: /python/bin/fdk /function/func.py handler
-memory: 128
+memory: 256
