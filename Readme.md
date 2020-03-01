@@ -33,6 +33,7 @@ Zero maintenance
 ```
 
 ## Quickstart For Setup On OCI Side
+![](https://github.com/vamsiramakrishnan/splunk-export-audit/blob/master/media/QuickStart_Steps.png)
 ### Create Compartments and Groups
 1. Create a Compartment `splunk-export-compartment`
 2. Create a Group  `splunk-export-users`
