@@ -34,10 +34,10 @@ Zero maintenance
 ## Pre-requisites
 Working understanding of Functions | OCI- API Gateway and Splunk. These are some of the broad permissions that the Solution would require from an IAM Perspective
 
- - The Dynamic Group in which the Fn is Placed must be able to read Audit Logs of the entire Tenancy
- - The Dynamic Group in which the Fn is placed must be able to list all regions and list all compartments. 
- - The Dynamic Group in which the API gateway is placed must be capable of invoking and managing functions as the API Gateway invokes functions. 
- - The Dynamic Group in which both the Fn(s) and the API Gateway are placed must be able to use network resources.
+ - The `Dynamic Group` in which the `Fn` is Placed must be able to read Audit Logs of the entire Tenancy
+ - The `Dynamic Group` in which the `Fn` is placed must be able to list all regions and list all compartments. 
+ - The `Dynamic Group` in which the `API gateway` is placed must be capable of invoking and managing functions as the API Gateway invokes functions. 
+ - The `Dynamic Group` in which both the `Fn(s) and the API Gateway` are placed must be able to use network resources.
 
 ### [](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-fn-environment)Setup Fn Environment
 
