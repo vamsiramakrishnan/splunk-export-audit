@@ -94,9 +94,32 @@ fn --verbose deploy splunk-export-app list-regions
 
 # Go into each Function and execute this command 
 cd ../list-compartments
-fn --verbose deplot splunk-export-app list-compartments
+fn --verbose deploy splunk-export-app list-compartments
 ```
+### Create API Gateway Deployment Endpoints
+| SNo| Deployment Name | Prefix| Method | Endpoint | Fn-Name
+|--|--|--|--|--|--|
+| 1 | list-regions | regions | GET | /listregions |  list-regions|
+| 2 | list-compartments | compartments | POST| /getcompartments | list-compartments | 
+|3 | fetch-audit-events | audit | POST | /auditlog | fetch-audit-events |
+|4 | publish-to-splunk | splunk | POST | /splunk | publish-to-splunk |
+|5 | wait-loop | wait | POST | /wait | wait-loop |
+
 ### Set the Environment Variables for Each Function
+| Fn-Name |Parameter Name  |  Description|  Example |
+|--|--|--|--| 
+|list-regions| list_compartments_fn_url | API gateway Endpoint/Route to call next Fn, list compartments  | https://api-gw-url/compartments/getcompartments
+|list-regions| list_regions_fn_url | Https Link to self , to call after delay for self perpetuation| https://api-gw-url/regions/listregions
+|list-regions| wait_loop_fn_url | The url of the Fn that makes a delayed Fn Call |https://api-gw-url/wait/waitloop
+|list-regions| wait_loop_time | Time until next time list-regions Fn is called again | 0-100 Seconds
+| list-compartments| fetch_audit_events_fn_url| API gateway Endpoint/Route to call next function, fetch audit event | https://api-gw-url/audit/auditlog
+|fetch-audit-events | publish_to_splunk_fn_url| API gateway Endpoint/Route to call next function, Publish to Splunk | https://api-gw-url/publishtosplunk/pushtosplunk
+|publish-to-splunk| source_source_name| The Source Name that you would like Splunk to see | oci-hec-event-collector
+| publish-to-splunk| source_host_name| The Source Hostname that you would like Splunk to see | oci-audit-logs
+|publish-to-splunk| splunk_url| The Splunk Cloud URL ( Append input to the beginning of your splunk cloud url, do not add any http/https etc.  | input-prd-p-hh6835czm4rp.cloud.splunk.com
+|publish-to-splunk| splunk_hec_token| The Token that is unqiue to that HEC  | TOKEN
+|publish-to-splunk| splunk_index_name| The index into which you'd like these logs to get aggregated | main
+
 
 
 ## Why we did what we did !
