@@ -24,6 +24,8 @@ A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splun
 -   The `OCI API Gateway` is used to Front-End the Functions. to allow for the fn invokation process through HTTP(S) Requests rather than using the `OCI Fn Invocation mechanism` or the `oci-curl`
 - The `Splunk HTTP event Collector` is a simplified mechanism that splunk provides to publish events 
 
+![](https://github.com/vamsiramakrishnan/splunk-export-audit/blob/master/media/SimpleRepresentation.png)
+
 ## Design Goals 
 ``` 
 Self Perpetuating
