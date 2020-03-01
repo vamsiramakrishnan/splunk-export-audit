@@ -35,15 +35,15 @@ Zero maintenance
 1. Create a Compartment `splunk-export-compartment`
 2. Create a Group  `splunk-export-users`
 3. Add `Required User` to group `splunk-export-users`
-4. Create IAM Policy with the following policy statements  
-`Allow group splunk-export-users to manage all-resources in compartment splunk-export-compartment
-Allow group splunk-export-users to read repos in tenancy
-Allow group splunk-export-users to read audit-events in tenancy
-Allow group splunk-export-users to read tenancies in tenancy
-Allow group splunk-export-users to read compartments in tenancy`
+4. Create IAM Policy with the following policy statements
+`Allow group splunk-export-users to manage all-resources in compartment splunk-export-compartment`
+`Allow group splunk-export-users to read repos in tenancy`
+`Allow group splunk-export-users to read audit-events in tenancy`
+`Allow group splunk-export-users to read tenancies in tenancy`
+`Allow group splunk-export-users to read compartments in tenancy`
+`Allow service faas to use all-resources in compartment splunk-export-compartment`
 6. Create a Dynamic Group `splunk-export-dg`
 7. Clone the Repo in your Dev Environment
-
     `git clone https://github.com/vamsiramakrishnan/splunk-export-audit.git`
 
 
