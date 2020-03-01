@@ -1,6 +1,5 @@
 import io
 import json
-
 from oci import pagination
 from oci import identity
 from oci import auth
@@ -21,7 +20,7 @@ def handler(ctx, data: io.BytesIO=None):
             x = session.post(audit_url, json={"region": region , "compartment": compartment['id']}, timeout=0.2)
         except:
             pass
-    return response.Response( ctx, response_data=json.dumps({"Status": compartments}), headers={"Content-Type": "application/json"})
+    return response.Response( ctx, response_data=json.dumps({"Status": "Success"}), headers={"Content-Type": "application/json"})
 
 def get_compartments(signer):
     """

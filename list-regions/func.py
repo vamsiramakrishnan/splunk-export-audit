@@ -18,14 +18,16 @@ def handler(ctx, data: io.BytesIO=None):
     session = requests.Session()
     for region in regions.data: 
         try:
-            x = session.post(compartment_url, json= {"region": region.region_name}, timeout=0.1)
+            x = session.post(compartment_url, json= {"region": region.region_name}, timeout=1)
         except:
             pass
+
     try:
-        x = session.post(wait_loop_url, json={"time":wait_loop_time,"url":region_url}, timeout=0.1)
+        x = session.post(wait_loop_url, json={"time": wait_loop_time, "url": region_url}, timeout=1)
     except:
         pass
-    return response.Response(ctx, response_data=json.dumps({"Status": "success"}), headers={"Content-Type": "application/json"})
+
+    return response.Response(ctx, response_data=json.dumps({"Status": regions.data[0].region_name}), headers={"Content-Type": "application/json"})
 
 def get_regions(signer):
     """

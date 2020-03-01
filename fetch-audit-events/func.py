@@ -30,7 +30,7 @@ def handler(ctx, data: io.BytesIO=None):
         except:
             pass
     return response.Response(
-        ctx, response_data=json.dumps({"status":audit_events}),
+        ctx, response_data=json.dumps({"status":"success"}),
         headers={"Content-Type": "application/json"}
     )
 
