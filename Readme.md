@@ -31,7 +31,11 @@ Scalable
 Low-Cost
 Zero maintenance
 ```
-## Quickstart
+
+## Quckstart For Setup on Client Side
+1. Setup Cloud Shell in your tenancy - [Link](https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/cloudshellgettingstarted.htm?TocPath=Developer%20Tools%20%7C%7CUsing%20Cloud%20Shell%7C_____0)
+
+## Quickstart For Setup On OCI
 1. Create a Compartment `splunk-export-compartment`
 2. Create a Group  `splunk-export-users`
 3. Add `Required User` to group `splunk-export-users`
@@ -42,12 +46,12 @@ Allow group splunk-export-users to read repos in tenancy
 Allow group splunk-export-users to read audit-events in tenancy
 Allow group splunk-export-users to read tenancies in tenancy
 Allow group splunk-export-users to read compartments in tenancy
-Allow service faas to use all-resources in compartment splunk-export-compartment
+Allow service FaaS to use all-resources in compartment splunk-export-compartment
+Allow service FaaS to read repos in tenancy
 ```
 5. Create a Dynamic Group `splunk-export-dg`
 6. Clone the Repo in your Dev Environment
     `git clone https://github.com/vamsiramakrishnan/splunk-export-audit.git`
-
 
 
 ## Pre-requisites
