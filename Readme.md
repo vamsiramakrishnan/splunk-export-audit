@@ -32,29 +32,38 @@ Low-Cost
 Zero maintenance
 ```
 
-## Quckstart For Setup on Client Side
-1. Setup Cloud Shell in your tenancy - [Link](https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/cloudshellgettingstarted.htm?TocPath=Developer%20Tools%20%7C%7CUsing%20Cloud%20Shell%7C_____0)
-
-## Quickstart For Setup On OCI
+## Quickstart For Setup On OCI Side
+### Create Compartments and Groups
 1. Create a Compartment `splunk-export-compartment`
 2. Create a Group  `splunk-export-users`
 3. Add `Required User` to group `splunk-export-users`
-4. Create IAM Policy with the following policy statements
+
+### Create IAM Policies
+4. Create an IAM Policy `splunk-export-policy` with the following policy statements in the `root` compartment 
 ```
 Allow group splunk-export-users to manage all-resources in compartment splunk-export-compartment
-Allow group splunk-export-users to read repos in tenancy
+Allow group splunk-export-users to manage repos in tenancy
 Allow group splunk-export-users to read audit-events in tenancy
 Allow group splunk-export-users to read tenancies in tenancy
 Allow group splunk-export-users to read compartments in tenancy
 Allow service FaaS to use all-resources in compartment splunk-export-compartment
 Allow service FaaS to read repos in tenancy
 ```
-5. Create a Dynamic Group `splunk-export-dg`
-6. Clone the Repo in your Dev Environment
+### Create Required Resources
+5. Use VCN Quick Start to Create a VCN `splunk-export-vcn` with Internet Connectivity
+6. Go to Security List and Create a `Stateful Ingress Rule` in the `Default Security list` to allow Ingress Traffic in  `TCP 443`
+7. Go to Default Security List and verify if a `Stateful Egress Rule` is available in the `Default Security List` to allow egress traffic in `all ports and all protocols`
+8. Create a Function Application `splunk-export-app` in the compartment `splunk-export-compartment` while selecting `splunk-export-vcn` and the `Public Subnet`
+9. Create an API Gateway `splunk-export-apigw` in the compartment `splunk-export-compartment`while selecting `splunk-export-vcn` and the `Public Subnet`
+10. Create a Dynamic Group `splunk-export-dg`
+11. Clone the Repo in your Dev Environment
     `git clone https://github.com/vamsiramakrishnan/splunk-export-audit.git`
 
+## Quckstart For Setup on Client Side
+1. Setup Cloud Shell in your tenancy - [Link](https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/cloudshellgettingstarted.htm?TocPath=Developer%20Tools%20%7C%7CUsing%20Cloud%20Shell%7C_____0)
+2.  Make sure you have Docker Push access setup on the Cloud Shell  - 
 
-## Pre-requisites
+## Why we did what we did !
 
 ### [](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-fn-environment)Setup Fn Environment
 #### Key Steps
