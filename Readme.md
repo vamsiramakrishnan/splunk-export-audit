@@ -1,5 +1,6 @@
 # Splunk-Export-Audit
 
+![](https://github.com/vamsiramakrishnan/splunk-export-audit/blob/master/media/TheSimpleArchitecture.png)
 A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splunk.
 ```
     +-------------------+  +--------------------+  +----------------------+
