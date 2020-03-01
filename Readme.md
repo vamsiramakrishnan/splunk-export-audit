@@ -87,6 +87,7 @@ fn update context api-url https://functions.[region-name].oraclecloud.com
 fn update context registry [YOUR-TENANCY-NAMESPACE]/[splunk-export-repo]
 ```
 ### Deploy the Functions
+Each folder within the repo represents a function , go to each folder and deploy the function using the the `fn --verbose deploy `
 ```
 cd splunk-export-audit
 cd list-regions
@@ -97,6 +98,7 @@ cd ../list-compartments
 fn --verbose deploy splunk-export-app list-compartments
 ```
 ### Create API Gateway Deployment Endpoints
+Map the endpoints 
 | SNo| Deployment Name | Prefix| Method | Endpoint | Fn-Name
 |--|--|--|--|--|--|
 | 1 | list-regions | regions | GET | /listregions |  list-regions|
@@ -106,6 +108,7 @@ fn --verbose deploy splunk-export-app list-compartments
 |5 | wait-loop | wait | POST | /wait | wait-loop |
 
 ### Set the Environment Variables for Each Function
+These environment variables help call other functions. One after the other. 
 | Fn-Name |Parameter Name  |  Description|  Example |
 |--|--|--|--| 
 |list-regions| list_compartments_fn_url | API gateway Endpoint/Route to call next Fn, list compartments  | https://api-gw-url/compartments/getcompartments
