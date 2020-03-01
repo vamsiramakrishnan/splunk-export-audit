@@ -49,19 +49,55 @@ Allow group splunk-export-users to read compartments in tenancy
 Allow service FaaS to use all-resources in compartment splunk-export-compartment
 Allow service FaaS to read repos in tenancy
 ```
-### Create Required Resources
+### Create a VCN, Subnet & Security Lists
 5. Use VCN Quick Start to Create a VCN `splunk-export-vcn` with Internet Connectivity
 6. Go to Security List and Create a `Stateful Ingress Rule` in the `Default Security list` to allow Ingress Traffic in  `TCP 443`
 7. Go to Default Security List and verify if a `Stateful Egress Rule` is available in the `Default Security List` to allow egress traffic in `all ports and all protocols`
-8. Create a Function Application `splunk-export-app` in the compartment `splunk-export-compartment` while selecting `splunk-export-vcn` and the `Public Subnet`
-9. Create an API Gateway `splunk-export-apigw` in the compartment `splunk-export-compartment`while selecting `splunk-export-vcn` and the `Public Subnet`
-10. Create a Dynamic Group `splunk-export-dg`
-11. Clone the Repo in your Dev Environment
-    `git clone https://github.com/vamsiramakrishnan/splunk-export-audit.git`
 
-## Quckstart For Setup on Client Side
-1. Setup Cloud Shell in your tenancy - [Link](https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/cloudshellgettingstarted.htm?TocPath=Developer%20Tools%20%7C%7CUsing%20Cloud%20Shell%7C_____0)
-2.  Make sure you have Docker Push access setup on the Cloud Shell  - 
+### Create a Function Application
+9. Create a Function Application `splunk-export-app` in the compartment `splunk-export-compartment` while selecting `splunk-export-vcn` and the `Public Subnet`
+
+### Create  an API Gateway 
+11. Create an API Gateway `splunk-export-apigw` in the compartment `splunk-export-compartment`while selecting `splunk-export-vcn` and the `Public Subnet`
+### Create a Dynamic Group
+13. Create a Dynamic Group `splunk-export-dg`
+Instances that meet the criteria defined by any of these rules will be included in the group.
+```
+ANY {instance.compartment.id = [splunk-export-compartment OCID]}
+ANY {resource.type = 'ApiGateway', resource.compartment.id =[splunk-export-compartment OCID]}
+ANY {resource.type = 'fnfunc', resource.compartment.id = [splunk-export-compartment OCID]}
+```
+### Create a  OCIR Repo
+14. Create a  `Private` Repository `splunk-export-repo`
+
+### Configure Cloud Shell
+15. Setup Cloud Shell in your tenancy - [Link](https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/cloudshellgettingstarted.htm?TocPath=Developer%20Tools%20%7C%7CUsing%20Cloud%20Shell%7C_____0)
+16. Clone the Repo in the cloud shell
+    `git clone https://github.com/vamsiramakrishnan/splunk-export-audit.git`
+17. Login to your region's docker login `iad.ocir.io` with appropriate credentials 
+###  Create & Set Fn Context 
+```
+fn create context splunk-export-context --provider oracle
+fn use context splunk-export-context`
+```
+### Update the Context 
+```
+fn update context oracle.compartment-id [splunk-export-compartment-ocid]
+fn update context api-url https://functions.[region-name].oraclecloud.com
+fn update context registry [YOUR-TENANCY-NAMESPACE]/[splunk-export-repo]
+```
+### Deploy the Functions
+```
+cd splunk-export-audit
+cd list-regions
+fn --verbose deploy splunk-export-app list-regions
+
+# Go into each Function and execute this command 
+cd ../list-compartments
+fn --verbose deplot splunk-export-app list-compartments
+```
+### Set the Environment Variables for Each Function
+
 
 ## Why we did what we did !
 
@@ -95,25 +131,6 @@ Allow service FaaS to read repos in tenancy
 ### [](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-a-fn-development-environment)Setup a Fn Development Environment
 
 [Install and Setup The Fn-CLI](https://fnproject.io/tutorials/install/#DownloadandInstalltheFnCLI)
-
-####  [](https://github.com/vamsiramakrishnan/splunk-export-audit#create--set-context)Create & Set Context
-
-```
-fn create context [CONTEXT-NAME] --provider oracle
-fn use context [CONTEXT-NAME]`
-
-```
-
-### [](https://github.com/vamsiramakrishnan/splunk-export-audit#update-the-context)Update the Context
-
-### [](https://github.com/vamsiramakrishnan/splunk-export-audit#compartment-id-api-url-container-registry)Compartment ID, API URL, Container Registry
-
-```
-fn update context oracle.compartment-id <compartment-ocid>
-fn update context api-url https://functions.us-phoenix-1.oraclecloud.com
-fn update context registry [YOUR-TENANCY-NAMESPACE]/[YOUR-OCIR-REPO]
-```
-
 
 ## A Deeper Dive into Architecture
 
