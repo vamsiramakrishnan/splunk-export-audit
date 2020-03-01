@@ -32,20 +32,33 @@ Low-Cost
 Zero maintenance
 ```
 ## Pre-requisites
-Working understanding of Functions | OCI- API Gateway and Splunk. These are some of the broad permissions that the Solution would require from an IAM Perspective
-
- - The `Dynamic Group` in which the `Fn` is Placed must be able to read Audit Logs of the entire Tenancy
- - The `Dynamic Group` in which the `Fn` is placed must be able to list all regions and list all compartments. 
- - The `Dynamic Group` in which the `API gateway` is placed must be capable of invoking and managing functions as the API Gateway invokes functions. 
- - The `Dynamic Group` in which both the `Fn(s) and the API Gateway` are placed must be able to use network resources.
 
 ### [](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-fn-environment)Setup Fn Environment
+#### Key Steps
 
-[Preparing your tenancy for Functions](https://docs.cloud.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsconfiguringtenancies.htm)
+ - Give your Functions-Users access to a Registry
+ - Give your Functions-Users access to Network Resources
+ - Create a Dynamic Group for Functions to access OCI API
+ - Give your Functions dynamic group access to List Regions
+ - Give your Functions dynamic group access to List Compartments
+ - Give your Functions dynamic group access to List Fetch Audit events all over the tenancy. 
+ 
+#### Links 
+- [Preparing your tenancy for Functions](https://docs.cloud.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsconfiguringtenancies.htm)
+- [IAM Policy Reference for Functions ](https://docs.cloud.oracle.com/en-us/iaas/Content/Functions/Tasks/functionscreatingpolicies.htm)
+
 
 ### [](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-api-gateway)Setup API Gateway
+#### Key Steps
 
-[Preparing your tenancy for API Gateway](https://docs.cloud.oracle.com/en-us/iaas/Content/APIGateway/Concepts/apigatewayprerequisites.htm)
+ - Give your API-Gateway users access to Functions 
+ - Give your API-Gateway users access to Network Resources 
+ - Create a Dynamic Group for API - Gateway to invoke functions.
+ - Give your API-Gateway dynamic group access to manage / invoke Functions
+#### Links 
+ - [Preparing your tenancy for API Gateway](https://docs.cloud.oracle.com/en-us/iaas/Content/APIGateway/Concepts/apigatewayprerequisites.htm) .
+- [Dynamic IAM Policy for API Gateway to manage
+   Functions](https://docs.cloud.oracle.com/en-us/iaas/Content/APIGateway/Tasks/apigatewaycreatingpolicies.htm#dynamic-group-policy)
 
 ### [](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-a-fn-development-environment)Setup a Fn Development Environment
 
@@ -70,13 +83,12 @@ fn update context registry [YOUR-TENANCY-NAMESPACE]/[YOUR-OCIR-REPO]
 ```
 
 
-
 ## A Deeper Dive into Architecture
 
 ![Flow of Fns calling each other](https://github.com/vamsiramakrishnan/splunk-export-audit/blob/master/media/DeepDiveL1.png)
 
 
-## Role of Each Component
+## Role of Each Fn
 ### 1. Wait Loop 
 
 #### Description 
@@ -125,11 +137,12 @@ fn update context registry [YOUR-TENANCY-NAMESPACE]/[YOUR-OCIR-REPO]
 #### Description
 ---------------
 
-1. In a given compartment and given region , fetch all audit events that occured in the last two minutes
+1. For each audit event, a publish to splunk 
 
 |Parameter Name  |  Description|  Example |
 |--|--|--| 
-| list_compartments_fn_url | API gateway Endpoint/Route to call next Fn, list compartments  | https://api-gw-url/compartments/getcompartments
-| list_regions_fn_url | Https Link to self , to call after delay for self perpetuation| https://api-gw-url/regions/listregions
-| wait_loop_fn_url | The url of the Fn that makes a delayed Fn Call |https://api-gw-url/wait/waitloop
-| wait_loop_time | Time until next time list-regions Fn is called again | 0-100 Seconds
+| source_source_name| The Source Name that you would like Splunk to see | oci-hec-event-collector
+| source_host_name| The Source Hostname that you would like Splunk to see | oci-audit-logs
+| splunk_url| The Splunk Cloud URL ( Append input to the beginning of your splunk cloud url, do not add any http/https etc.  | input-prd-p-hh6835czm4rp.cloud.splunk.com
+| splunk_hec_token| The Token that is unqiue to that HEC  | TOKEN
+| splunk_index_name| The index into which you'd like these logs to get aggregated | main
