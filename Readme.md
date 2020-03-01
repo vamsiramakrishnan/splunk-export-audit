@@ -17,9 +17,17 @@ A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splun
     +-------------------------------------------+  +----------------------+
 
 ```
+## [](https://github.com/vamsiramakrishnan/splunk-export-audit#components)Components
+
+-   The `OCI Audit API` is  queried for audit events every 2 minutes for all regions and all compartments relevant to the tenancy. 
+-   The `OCI Functions` trigger a series of queries and publish events to the Splunk HTTP Event Collector End point.
+-   The `OCI API Gateway` is used to Front-End the Functions. to allow for the fn invokation process through HTTP(S) Requests rather than using the `OCI Fn Invocation mechanism` or the `oci-curl`
+- The `Splunk HTTP event Collector` is a simplified mechanism that splunk provides to publish events 
+- 
 ## A Deeper Dive into Architecture
 
 ![Flow of Fns calling each other](https://github.com/vamsiramakrishnan/splunk-export-audit/blob/master/media/DeepDiveL1.png)
+
 
 ## Role of Each Component
 ### Wait Loop 
@@ -37,19 +45,13 @@ A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splun
 
 1. Every tenancy can be subscribed to a certain number of regions and this function lists those regions.
 
-
 |Parameter Name  |  Description|  Example |
 |--|--|--| 
 | list_compartments_fn_url | API gateway Endpoint/Route | https://dummy-url-apigateway.us-phoenix-1.oci.customer-oci.com/compartments/getcompartments
 | list_regions_fn_url | Https Link to self , to call after delay for self perpetuation| https://dummy-url-apigateway.us-phoenix-1.oci.customer-oci.com/regions/listregions
-| wait_loop_fn_url | The url of the Fn that makes a delayed Fn Call |https://dummy-url-apigateway.us-phoenix-1.oci.customer-oci.com/audit/auditlog
+| wait_loop_fn_url | The url of the Fn that makes a delayed Fn Call |https://dummy-url-apigateway.us-phoenix-1.oci.customer-oci.com/wait/waitloop
 | wait_loop_time | Time until next time list-regions Fn is called again | 0-100 Seconds
 
-## [](https://github.com/vamsiramakrishnan/splunk-export-audit#components)Components
-
--   The OCI Audit API is used to query for events every 2 minutes
--   The OCI Fns trigger a series of queries and publish events to the Splunk HTTP Event Collector End point.
--   The OCI API Gateway is used to Front-End the Functions. to allow for the fn invokation process through HTTP(S) Requests
 
 ## [](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-fn-environment)Setup Fn Environment
 
