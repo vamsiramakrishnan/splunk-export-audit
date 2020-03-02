@@ -1,5 +1,9 @@
 # Splunk-Export-Audit
 
+## Introduction 
+For Integrated SecOps , the SIEM plays an important component and Splunk is a very popular SIEM solution. The setup described below helps in near-realtime, zero-touch audit-log export to the Splunk Http event Collector for Indexing and Analysis.
+
+
 ![](https://github.com/vamsiramakrishnan/splunk-export-audit/blob/master/media/TheSimpleArchitecture.png)
 A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splunk.
 ```
