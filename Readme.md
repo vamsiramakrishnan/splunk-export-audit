@@ -24,7 +24,7 @@ A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splun
 # Table of Contents
 - [Splunk-Export-Audit](#splunk-export-audit)
   * [Introduction](#introduction)
-  * [[](https://github.com/vamsiramakrishnan/splunk-export-audit#components)Components](#---https---githubcom-vamsiramakrishnan-splunk-export-audit-components-components)
+  * [Components](#components)
   * [Design Goals](#design-goals)
   * [Quickstart For Setup On OCI Side](#quickstart-for-setup-on-oci-side)
     + [Create Compartments and Groups](#create-compartments-and-groups)
@@ -67,7 +67,7 @@ A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splun
       - [Description](#description-4)
       - [Parameters](#parameters-4)
 
-## [](https://github.com/vamsiramakrishnan/splunk-export-audit#components)Components
+## Components
 
 -   The `OCI Audit API` is  queried for audit events every 2 minutes for all regions and all compartments relevant to the tenancy. 
 -   The `OCI Functions` trigger a series of queries and publish events to the Splunk HTTP Event Collector End point.
