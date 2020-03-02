@@ -21,6 +21,7 @@ A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splun
     +-------------------------------------------+  +----------------------+
 
 ```
+# Table of Contents
 - [Splunk-Export-Audit](#splunk-export-audit)
   * [Components](#components)
   * [Design Goals](#design-goals)
@@ -227,7 +228,8 @@ curl --location --request GET '[apigateway-url].us-phoenix-1.oci.customer-oci.co
 
  1. Reduce the number of function calls , by running a function that stays idle for a configurable amount of time.
  2. Accept a Wait Time and Accept a Url to call after waiting and execute.
-
+####  Parameters
+Nil
 ### 2. List Regions
 
 #### Description
@@ -235,6 +237,7 @@ curl --location --request GET '[apigateway-url].us-phoenix-1.oci.customer-oci.co
 
 1. Every tenancy can be subscribed to a certain number of regions and this function lists those regions.
 
+####  Parameters
 |Parameter Name  |  Description|  Example |
 |--|--|--| 
 | list_compartments_fn_url | API gateway Endpoint/Route to call next Fn, list compartments  | https://api-gw-url/compartments/getcompartments
@@ -248,7 +251,7 @@ curl --location --request GET '[apigateway-url].us-phoenix-1.oci.customer-oci.co
 ---------------
 
 1. IAM Policies are global and all regions have the same set of compartments within an OCI tenancy , yet audit events for each of these compartments occur region wise and hence the need to fetch individual compartments on a per region basis.
-
+####  Parameters
 |Parameter Name  |  Description|  Example |
 |--|--|--| 
 | fetch_audit_events_fn_url| API gateway Endpoint/Route to call next function, fetch audit event | https://api-gw-url/audit/auditlog
@@ -259,7 +262,7 @@ curl --location --request GET '[apigateway-url].us-phoenix-1.oci.customer-oci.co
 ---------------
 
 1. In a given compartment and given region , fetch all audit events that occured in the last two minutes
-
+####  Parameters
 |Parameter Name  |  Description|  Example |
 |--|--|--| 
 | publish_to_splunk_fn_url| API gateway Endpoint/Route to call next function, Publish to Splunk | https://api-gw-url/publishtosplunk/pushtosplunk
@@ -268,8 +271,8 @@ curl --location --request GET '[apigateway-url].us-phoenix-1.oci.customer-oci.co
 #### Description
 ---------------
 
-1. For each audit event, a publish to splunk 
-
+1. For each audit event , a publish to the splunk HTTP Event Collector
+####  Parameters
 |Parameter Name  |  Description|  Example |
 |--|--|--| 
 | source_source_name| The Source Name that you would like Splunk to see | oci-hec-event-collector
