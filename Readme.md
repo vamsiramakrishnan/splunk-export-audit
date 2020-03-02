@@ -17,6 +17,48 @@ A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splun
     +-------------------------------------------+  +----------------------+
 
 ```
+- [Splunk-Export-Audit](#splunk-export-audit)
+  * [[](https://github.com/vamsiramakrishnan/splunk-export-audit#components)Components](#---https---githubcom-vamsiramakrishnan-splunk-export-audit-components-components)
+  * [Design Goals](#design-goals)
+  * [Quickstart For Setup On OCI Side](#quickstart-for-setup-on-oci-side)
+    + [Create Compartments and Groups](#create-compartments-and-groups)
+    + [Create IAM Policies](#create-iam-policies)
+    + [Create a VCN, Subnet & Security Lists](#create-a-vcn--subnet---security-lists)
+    + [Create a Function Application](#create-a-function-application)
+    + [Create  an API Gateway](#create--an-api-gateway)
+    + [Create a Dynamic Group](#create-a-dynamic-group)
+    + [Create a  OCIR Repo](#create-a--ocir-repo)
+    + [Configure Cloud Shell](#configure-cloud-shell)
+    + [Create & Set Fn Context](#create---set-fn-context)
+    + [Update the Context](#update-the-context)
+    + [Deploy the Functions](#deploy-the-functions)
+    + [Create API Gateway Deployment Endpoints](#create-api-gateway-deployment-endpoints)
+    + [Set the Environment Variables for Each Function](#set-the-environment-variables-for-each-function)
+  * [Invoke !](#invoke--)
+  * [Why we did what we did !](#why-we-did-what-we-did--)
+    + [[](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-fn-environment)Setup Fn Environment](#---https---githubcom-vamsiramakrishnan-splunk-export-audit-setup-fn-environment-setup-fn-environment)
+      - [Key Steps](#key-steps)
+      - [Links](#links)
+    + [[](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-api-gateway)Setup API Gateway](#---https---githubcom-vamsiramakrishnan-splunk-export-audit-setup-api-gateway-setup-api-gateway)
+      - [Key Steps](#key-steps-1)
+      - [Links](#links-1)
+    + [[](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-a-fn-development-environment)Setup a Fn Development Environment](#---https---githubcom-vamsiramakrishnan-splunk-export-audit-setup-a-fn-development-environment-setup-a-fn-development-environment)
+  * [A Deeper Dive into Architecture](#a-deeper-dive-into-architecture)
+  * [Role of Each Fn](#role-of-each-fn)
+    + [1. Wait Loop](#1-wait-loop)
+      - [Description](#description)
+    + [2. List Regions](#2-list-regions)
+      - [Description](#description-1)
+    + [3. List Compartments](#3-list-compartments)
+      - [Description](#description-2)
+    + [4. Fetch Audit Events](#4-fetch-audit-events)
+      - [Description](#description-3)
+    + [5. Publish to Splunk](#5-publish-to-splunk)
+      - [Description](#description-4)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
+
 ## [](https://github.com/vamsiramakrishnan/splunk-export-audit#components)Components
 
 -   The `OCI Audit API` is  queried for audit events every 2 minutes for all regions and all compartments relevant to the tenancy. 
