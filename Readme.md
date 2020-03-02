@@ -18,7 +18,7 @@ A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splun
 
 ```
 - [Splunk-Export-Audit](#splunk-export-audit)
-  * [[](https://github.com/vamsiramakrishnan/splunk-export-audit#components)Components](#---https---githubcom-vamsiramakrishnan-splunk-export-audit-components-components)
+  * [Components](#components)
   * [Design Goals](#design-goals)
   * [Quickstart For Setup On OCI Side](#quickstart-for-setup-on-oci-side)
     + [Create Compartments and Groups](#create-compartments-and-groups)
@@ -36,13 +36,13 @@ A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splun
     + [Set the Environment Variables for Each Function](#set-the-environment-variables-for-each-function)
   * [Invoke !](#invoke--)
   * [Why we did what we did !](#why-we-did-what-we-did--)
-    + [[](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-fn-environment)Setup Fn Environment](#---https---githubcom-vamsiramakrishnan-splunk-export-audit-setup-fn-environment-setup-fn-environment)
+    + [Setup Fn Environment](#setup-fn-environment)
       - [Key Steps](#key-steps)
       - [Links](#links)
-    + [[](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-api-gateway)Setup API Gateway](#---https---githubcom-vamsiramakrishnan-splunk-export-audit-setup-api-gateway-setup-api-gateway)
+    + [Setup API Gateway](#setup-api-gateway)
       - [Key Steps](#key-steps-1)
       - [Links](#links-1)
-    + [[](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-a-fn-development-environment)Setup a Fn Development Environment](#---https---githubcom-vamsiramakrishnan-splunk-export-audit-setup-a-fn-development-environment-setup-a-fn-development-environment)
+    + [Setup a Fn Development Environment](#setup-a-fn-development-environment)
   * [A Deeper Dive into Architecture](#a-deeper-dive-into-architecture)
   * [Role of Each Fn](#role-of-each-fn)
     + [1. Wait Loop](#1-wait-loop)
@@ -55,9 +55,6 @@ A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splun
       - [Description](#description-3)
     + [5. Publish to Splunk](#5-publish-to-splunk)
       - [Description](#description-4)
-
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-
 
 ## [](https://github.com/vamsiramakrishnan/splunk-export-audit#components)Components
 
