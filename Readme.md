@@ -172,8 +172,16 @@ These environment variables help call other functions. One after the other.
 
 ## Invoke !
 Invoke Once and the loop will stay active as long as the tenancy does continuously pushing events to Splunk . 
+```
+curl --location --request GET '[apigateway-url].us-phoenix-1.oci.customer-oci.com/regions/listregions'
+```
 
-## Why we did what we did !
+## Rationale behind the Quickstart !
+
+1. The Fn accesses audit API across regions and compartments
+2. The Fn is hosted behind an API Gateway
+3. The Fn needs to make outbound internet requests to the Splunk endpoint 
+4. The Fn must fire and forget and not wait until other Fns Execute.
 
 ### [](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-fn-environment)Setup Fn Environment
 #### Key Steps
