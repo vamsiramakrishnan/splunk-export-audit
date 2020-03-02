@@ -42,13 +42,13 @@ A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splun
     + [Set the Environment Variables for Each Function](#set-the-environment-variables-for-each-function)
   * [Invoke !](#invoke--)
   * [Rationale behind the Quickstart !](#rationale-behind-the-quickstart--)
-    + [[](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-fn-environment)Setup Fn Environment](#---https---githubcom-vamsiramakrishnan-splunk-export-audit-setup-fn-environment-setup-fn-environment)
+    + [Setup Fn Environment](#setup-fn-environment)
       - [Key Steps](#key-steps)
       - [Links](#links)
-    + [[](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-api-gateway)Setup API Gateway](#---https---githubcom-vamsiramakrishnan-splunk-export-audit-setup-api-gateway-setup-api-gateway)
+    + [Setup API Gateway](#setup-api-gateway)
       - [Key Steps](#key-steps-1)
       - [Links](#links-1)
-    + [[](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-a-fn-development-environment)Setup a Fn Development Environment](#---https---githubcom-vamsiramakrishnan-splunk-export-audit-setup-a-fn-development-environment-setup-a-fn-development-environment)
+    + [Setup a Fn Development Environment](#setup-a-fn-development-environment)
   * [A Deeper Dive into Architecture](#a-deeper-dive-into-architecture)
   * [Role of Each Fn](#role-of-each-fn)
     + [1. Wait Loop](#1-wait-loop)
@@ -190,7 +190,7 @@ curl --location --request GET '[apigateway-url].us-phoenix-1.oci.customer-oci.co
 3. The Fn needs to make outbound internet requests to the Splunk endpoint 
 4. The Fn must fire and forget and not wait until other Fns Execute.
 
-### [](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-fn-environment)Setup Fn Environment
+### Setup Fn Environment
 #### Key Steps
 
  - Give your Functions-Users access to a Registry
@@ -205,7 +205,7 @@ curl --location --request GET '[apigateway-url].us-phoenix-1.oci.customer-oci.co
 - [IAM Policy Reference for Functions ](https://docs.cloud.oracle.com/en-us/iaas/Content/Functions/Tasks/functionscreatingpolicies.htm)
 
 
-### [](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-api-gateway)Setup API Gateway
+### Setup API Gateway
 #### Key Steps
 
  - Give your API-Gateway users access to Functions 
