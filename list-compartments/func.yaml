@@ -1,6 +1,6 @@
 schema_version: 20180708
 name: list-compartments
-version: 0.0.51
+version: 0.0.56
 runtime: python
 entrypoint: /python/bin/fdk /function/func.py handler
 memory: 256
