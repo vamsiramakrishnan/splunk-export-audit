@@ -7,18 +7,6 @@ For Integrated SecOps , the SIEM plays an important component and Splunk is a ve
 ![](https://github.com/vamsiramakrishnan/splunk-export-audit/blob/master/media/TheSimpleArchitecture.png)
 A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splunk.
 ```
-    +-------------------+  +--------------------+  +----------------------+
-    |                   |  |                    |  |                      |
-    |  OCI API Gateway  |  |  OCI Fns           |  |                      |
-    |                   |  |                    |  |                      |
-    |                   |  |                    |  |                      |
-    +-------------------+  +--------------------+  |   Splunk HTTP Event  |
-                                                   |     Collector        |
-    +-------------------------------------------+  |                      |
-    |                                           |  |                      |
-    |             OCI - Audit API               |  |                      |
-    |                                           |  |                      |
-    +-------------------------------------------+  +----------------------+
 
 ```
 # Table of Contents
@@ -51,19 +39,13 @@ A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splun
     + [Setup a Fn Development Environment](#setup-a-fn-development-environment)
   * [A Deeper Dive into Architecture](#a-deeper-dive-into-architecture)
   * [Role of Each Fn](#role-of-each-fn)
-    + [1. Wait Loop](#1-wait-loop)
-      - [Description](#description)
-      - [Parameters](#parameters)
-    + [2. List Regions](#2-list-regions)
+    + [1. List Regions](#2-list-regions)
       - [Description](#description-1)
       - [Parameters](#parameters-1)
-    + [3. List Compartments](#3-list-compartments)
-      - [Description](#description-2)
-      - [Parameters](#parameters-2)
-    + [4. Fetch Audit Events](#4-fetch-audit-events)
+    + [2. Fetch Audit Events](#4-fetch-audit-events)
       - [Description](#description-3)
       - [Parameters](#parameters-3)
-    + [5. Publish to Splunk](#5-publish-to-splunk)
+    + [3. Publish to Splunk](#5-publish-to-splunk)
       - [Description](#description-4)
       - [Parameters](#parameters-4)
 
@@ -156,10 +138,8 @@ Map the endpoints
 | SNo| Deployment Name | Prefix| Method | Endpoint | Fn-Name
 |--|--|--|--|--|--|
 | 1 | list-regions | regions | GET | /listregions |  list-regions|
-| 2 | list-compartments | compartments | POST| /getcompartments | list-compartments | 
-|3 | fetch-audit-events | audit | POST | /auditlog | fetch-audit-events |
-|4 | publish-to-splunk | splunk | POST | /splunk | publish-to-splunk |
-|5 | wait-loop | wait | POST | /wait | wait-loop |
+|2 | fetch-audit-events | audit | POST | /auditlog | fetch-audit-events |
+|3 | publish-to-splunk | splunk | POST | /splunk | publish-to-splunk |
 
 ### Set the Environment Variables for Each Function
 These environment variables help call other functions. One after the other. 
@@ -169,7 +149,6 @@ These environment variables help call other functions. One after the other.
 |list-regions| list_regions_fn_url | Https Link to self , to call after delay for self perpetuation| https://api-gw-url/regions/listregions
 |list-regions| wait_loop_fn_url | The url of the Fn that makes a delayed Fn Call |https://api-gw-url/wait/waitloop
 |list-regions| wait_loop_time | Time until next time list-regions Fn is called again | 0-100 Seconds
-| list-compartments| fetch_audit_events_fn_url| API gateway Endpoint/Route to call next function, fetch audit event | https://api-gw-url/audit/auditlog
 |fetch-audit-events | publish_to_splunk_fn_url| API gateway Endpoint/Route to call next function, Publish to Splunk | https://api-gw-url/publishtosplunk/pushtosplunk
 |publish-to-splunk| source_source_name| The Source Name that you would like Splunk to see | oci-hec-event-collector
 | publish-to-splunk| source_host_name| The Source Hostname that you would like Splunk to see | oci-audit-logs
@@ -220,69 +199,3 @@ curl --location --request GET '[apigateway-url].us-phoenix-1.oci.customer-oci.co
 ### [](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-a-fn-development-environment)Setup a Fn Development Environment
 
 [Install and Setup The Fn-CLI](https://fnproject.io/tutorials/install/#DownloadandInstalltheFnCLI)
-
-## A Deeper Dive into Architecture
-
-![Flow of Fns calling each other](https://github.com/vamsiramakrishnan/splunk-export-audit/blob/master/media/DeepDiveL1.png)
-
-
-## Role of Each Fn
-### 1. Wait Loop 
-
-#### Description 
---------------
-
- 1. Reduce the number of function calls , by running a function that stays idle for a configurable amount of time.
- 2. Accept a Wait Time and Accept a Url to call after waiting and execute.
-####  Parameters
-Nil
-### 2. List Regions
-
-#### Description
----------------
-
-1. Every tenancy can be subscribed to a certain number of regions and this function lists those regions.
-
-####  Parameters
-|Parameter Name  |  Description|  Example |
-|--|--|--| 
-| list_compartments_fn_url | API gateway Endpoint/Route to call next Fn, list compartments  | https://api-gw-url/compartments/getcompartments
-| list_regions_fn_url | Https Link to self , to call after delay for self perpetuation| https://api-gw-url/regions/listregions
-| wait_loop_fn_url | The url of the Fn that makes a delayed Fn Call |https://api-gw-url/wait/waitloop
-| wait_loop_time | Time until next time list-regions Fn is called again | 0-100 Seconds
-
-### 3. List Compartments
-
-#### Description
----------------
-
-1. IAM Policies are global and all regions have the same set of compartments within an OCI tenancy , yet audit events for each of these compartments occur region wise and hence the need to fetch individual compartments on a per region basis.
-####  Parameters
-|Parameter Name  |  Description|  Example |
-|--|--|--| 
-| fetch_audit_events_fn_url| API gateway Endpoint/Route to call next function, fetch audit event | https://api-gw-url/audit/auditlog
-
-### 4. Fetch Audit Events
-
-#### Description
----------------
-
-1. In a given compartment and given region , fetch all audit events that occured in the last two minutes
-####  Parameters
-|Parameter Name  |  Description|  Example |
-|--|--|--| 
-| publish_to_splunk_fn_url| API gateway Endpoint/Route to call next function, Publish to Splunk | https://api-gw-url/publishtosplunk/pushtosplunk
-
-### 5. Publish to Splunk 
-#### Description
----------------
-
-1. For each audit event , a publish to the splunk HTTP Event Collector
-####  Parameters
-|Parameter Name  |  Description|  Example |
-|--|--|--| 
-| source_source_name| The Source Name that you would like Splunk to see | oci-hec-event-collector
-| source_host_name| The Source Hostname that you would like Splunk to see | oci-audit-logs
-| splunk_url| The Splunk Cloud URL ( Append input to the beginning of your splunk cloud url, do not add any http/https etc.  | input-prd-p-hh6835czm4rp.cloud.splunk.com
-| splunk_hec_token| The Token that is unqiue to that HEC  | TOKEN
-| splunk_index_name| The index into which you'd like these logs to get aggregated | main
