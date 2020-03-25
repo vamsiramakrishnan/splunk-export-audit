@@ -3,57 +3,18 @@
 ## Introduction 
 For Integrated SecOps , the SIEM plays an important component and Splunk is a very popular SIEM solution. The setup described below helps in near-realtime, zero-touch audit-log export to the Splunk Http event Collector for Indexing and Analysis.
 
-
 ![](https://github.com/vamsiramakrishnan/splunk-export-audit/blob/master/media/TheSimpleArchitecture.png)
 A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splunk.
-```
 
-```
-# Table of Contents
-- [Splunk-Export-Audit](#splunk-export-audit)
-  * [Introduction](#introduction)
-  * [Components](#components)
-  * [Design Goals](#design-goals)
-  * [Quickstart For Setup On OCI Side](#quickstart-for-setup-on-oci-side)
-    + [Create Compartments and Groups](#create-compartments-and-groups)
-    + [Create IAM Policies](#create-iam-policies)
-    + [Create a VCN, Subnet & Security Lists](#create-a-vcn--subnet---security-lists)
-    + [Create a Function Application](#create-a-function-application)
-    + [Create  an API Gateway](#create--an-api-gateway)
-    + [Create a Dynamic Group](#create-a-dynamic-group)
-    + [Create a  OCIR Repo](#create-a--ocir-repo)
-    + [Configure Cloud Shell](#configure-cloud-shell)
-    + [Create & Set Fn Context](#create---set-fn-context)
-    + [Update the Context](#update-the-context)
-    + [Deploy the Functions](#deploy-the-functions)
-    + [Create API Gateway Deployment Endpoints](#create-api-gateway-deployment-endpoints)
-    + [Set the Environment Variables for Each Function](#set-the-environment-variables-for-each-function)
-  * [Invoke !](#invoke--)
-  * [Rationale behind the Quickstart !](#rationale-behind-the-quickstart--)
-    + [Setup Fn Environment](#setup-fn-environment)
-      - [Key Steps](#key-steps)
-      - [Links](#links)
-    + [Setup API Gateway](#setup-api-gateway)
-      - [Key Steps](#key-steps-1)
-      - [Links](#links-1)
-    + [Setup a Fn Development Environment](#setup-a-fn-development-environment)
-  * [A Deeper Dive into Architecture](#a-deeper-dive-into-architecture)
-  * [Role of Each Fn](#role-of-each-fn)
-    + [1. List Regions](#2-list-regions)
-      - [Description](#description-1)
-      - [Parameters](#parameters-1)
-    + [2. Fetch Audit Events](#4-fetch-audit-events)
-      - [Description](#description-3)
-      - [Parameters](#parameters-3)
-    + [3. Publish to Splunk](#5-publish-to-splunk)
-      - [Description](#description-4)
-      - [Parameters](#parameters-4)
 
 ## Components
 
 -   The `OCI Audit API` is  queried for audit events every 2 minutes for all regions and all compartments relevant to the tenancy. 
 -   The `OCI Functions` trigger a series of queries and publish events to the Splunk HTTP Event Collector End point.
+-  `OCI Health Checks` are used to trigger a GET Request on to a public HTTPS Endpoint every `5-min` / `1-min` /  `30s`
 -   The `OCI API Gateway` is used to Front-End the Functions. to allow for the fn invokation process through HTTP(S) Requests rather than using the `OCI Fn Invocation mechanism` or the `oci-curl`
+- `OCI Streaming` as a scalable source of persistence that stores `state`, `audit events`, `most up-to-date compartment & region list` in the tenancy. 
+- `OCI Notifications` are used to notify downstream functions for triggering along with information on  `stream-cursor, offset, partition` information to the next function. 
 - The `Splunk HTTP event Collector` is a simplified mechanism that splunk provides to publish events 
 
 ![](https://github.com/vamsiramakrishnan/splunk-export-audit/blob/master/media/SimpleRepresentation.png)
@@ -68,23 +29,44 @@ Zero maintenance
 ```
 
 ## Quickstart For Setup On OCI Side
-![](https://github.com/vamsiramakrishnan/splunk-export-audit/blob/master/media/QuickStart_Steps.png)
+
 ### Create Compartments and Groups
 1. Create a Compartment `splunk-export-compartment`
 2. Create a Group  `splunk-export-users`
 3. Add `Required User` to group `splunk-export-users`
+4. Create a Dynamic Group `splunk-export-dg`
+5. Write appropriate IAM Policies at the tenancy level and compartment level.
+
 
 ### Create IAM Policies
 4. Create an IAM Policy `splunk-export-policy` with the following policy statements in the `root` compartment 
 ```
-Allow group splunk-export-users to manage all-resources in compartment splunk-export-compartment
 Allow group splunk-export-users to manage repos in tenancy
 Allow group splunk-export-users to read audit-events in tenancy
 Allow group splunk-export-users to read tenancies in tenancy
 Allow group splunk-export-users to read compartments in tenancy
-Allow service FaaS to use all-resources in compartment splunk-export-compartment
 Allow service FaaS to read repos in tenancy
 ```
+### Create a Dynamic Group
+13. Create a Dynamic Group `splunk-export-dg`
+Instances that meet the criteria defined by any of these rules will be included in the group.
+```
+ANY {instance.compartment.id = [splunk-export-compartment OCID]}
+ANY {resource.type = 'ApiGateway', resource.compartment.id =[splunk-export-compartment OCID]}
+ANY {resource.type = 'fnfunc', resource.compartment.id = [splunk-export-compartment OCID]}
+```
+### Create Dynamic Group IAM Policy
+Create this Policy inside the compartment `splunk-export-compartment`
+```
+Allow service FaaS to use all-resources in compartment splunk-export-compartment
+Allow group splunk-export-users to manage all-resources in compartment splunk-export-compartment
+Allow group splunk-export-dg to use ons-topics in compartment splunk-export-compartment
+Allow group splunk-export-dg to use stream-pull in compartment splunk-export-compartment
+Allow group splunk-export-dg to use stream-push in compartment splunk-export-compartment
+Allow group splunk-export-dg to use virtual-network-family in compartment splunk-export-compartment
+Allow service FaaS to use all-resources in compartment splunk-export-compartment
+```
+
 ### Create a VCN, Subnet & Security Lists
 5. Use VCN Quick Start to Create a VCN `splunk-export-vcn` with Internet Connectivity
 6. Go to Security List and Create a `Stateful Ingress Rule` in the `Default Security list` to allow Ingress Traffic in  `TCP 443`
@@ -95,14 +77,10 @@ Allow service FaaS to read repos in tenancy
 
 ### Create  an API Gateway 
 11. Create an API Gateway `splunk-export-apigw` in the compartment `splunk-export-compartment`while selecting `splunk-export-vcn` and the `Public Subnet`
-### Create a Dynamic Group
-13. Create a Dynamic Group `splunk-export-dg`
-Instances that meet the criteria defined by any of these rules will be included in the group.
-```
-ANY {instance.compartment.id = [splunk-export-compartment OCID]}
-ANY {resource.type = 'ApiGateway', resource.compartment.id =[splunk-export-compartment OCID]}
-ANY {resource.type = 'fnfunc', resource.compartment.id = [splunk-export-compartment OCID]}
-```
+
+### Create Notification Channels 
+12. Create two notification channels `splunk-fetch-audit-event`  `splunk-publish-to-splunk`. Create subscriptions to Trigger Functions
+
 ### Create a  OCIR Repo
 14. Create a  `Private` Repository `splunk-export-repo`
 
@@ -111,6 +89,7 @@ ANY {resource.type = 'fnfunc', resource.compartment.id = [splunk-export-compartm
 16. Clone the Repo in the cloud shell
     `git clone https://github.com/vamsiramakrishnan/splunk-export-audit.git`
 17. Login to your region's docker login `iad.ocir.io` with appropriate credentials 
+
 ###  Create & Set Fn Context 
 ```
 fn create context splunk-export-context --provider oracle
@@ -134,12 +113,11 @@ cd ../list-compartments
 fn --verbose deploy splunk-export-app list-compartments
 ```
 ### Create API Gateway Deployment Endpoints
-Map the endpoints 
-| SNo| Deployment Name | Prefix| Method | Endpoint | Fn-Name
-|--|--|--|--|--|--|
-| 1 | list-regions | regions | GET | /listregions |  list-regions|
-|2 | fetch-audit-events | audit | POST | /auditlog | fetch-audit-events |
-|3 | publish-to-splunk | splunk | POST | /splunk | publish-to-splunk |
+Map the endpoint as follows 
+ Deployment Name | Prefix| Method | Endpoint | Fn-Name
+--|--|--|--|--|
+ list-regions | regions | GET | /listregions |  list-regions|
+
 
 ### Set the Environment Variables for Each Function
 These environment variables help call other functions. One after the other. 
