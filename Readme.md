@@ -1,13 +1,12 @@
 # Splunk-Export-Audit
 
 ## Introduction 
-For Integrated SecOps , the SIEM plays an important component and Splunk is a very popular SIEM solution. The setup described below helps in near-realtime, zero-touch audit-log export to the Splunk Http event Collector for Indexing and Analysis.
+For Integrated SecOps, the SIEM plays an important component and Splunk is a very popular SIEM solution. The setup described below helps in near-realtime, zero-touch audit-log export to the Splunk Http event Collector for Indexing and Analysis.The same architecture can be used to export to almost any SIEM as it leverages the HTTP Event Collector.
 
 ![](https://github.com/vamsiramakrishnan/splunk-export-audit/blob/master/media/TheSimpleArchitecture.png)
 A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splunk.
 
 ## Components
-
 -   The `OCI Audit API` is  queried for audit events every 2 minutes for all regions and all compartments relevant to the tenancy. 
 -   The `OCI Functions` trigger a series of queries and publish events to the Splunk HTTP Event Collector End point.
 -  `OCI Health Checks` are used to trigger a GET Request on to a public HTTPS Endpoint every `5-min` / `1-min` /  `30s`
@@ -34,8 +33,10 @@ Zero maintenance
 ```
 
 ## Quickstart For Setup On OCI Side
+This quickstart assumes you have working understanding of basic principles of OCI around IAM | Networking and you know how to get around the OCI Console. 
 
 ### Create Compartments and Groups
+- `Burger-Menu` --> `Identity` --> `Compartments | Users | Groups`
 1. Create a Compartment `splunk-export-compartment`
 2. Create a Group  `splunk-export-users`
 3. Add `Required User` to group `splunk-export-users`
@@ -43,6 +44,7 @@ Zero maintenance
 5. Write appropriate IAM Policies at the tenancy level and compartment level.
 
 ### Create IAM Policies
+- `Burger-Menu` --> `Identity` --> `Policies`
  - Create an IAM Policy `splunk-export-policy` with the following policy statements in the `root` compartment 
 ```
 Allow group splunk-export-users to manage repos in tenancy
@@ -52,6 +54,7 @@ Allow group splunk-export-users to read compartments in tenancy
 Allow service FaaS to read repos in tenancy
 ```
 ### Create a Dynamic Group
+- `Burger-Menu` --> `Identity` --> `Dynamic Groups`
  - Create a Dynamic Group `splunk-export-dg` Instances that meet the criteria defined by any of these rules will be included in the group.
 ```
 ANY {instance.compartment.id = [splunk-export-compartment OCID]}
@@ -59,6 +62,7 @@ ANY {resource.type = 'ApiGateway', resource.compartment.id =[splunk-export-compa
 ANY {resource.type = 'fnfunc', resource.compartment.id = [splunk-export-compartment OCID]}
 ```
 ### Create Dynamic Group IAM Policy
+- `Burger-Menu` --> `Identity` --> `Policies`
 Create this Policy inside the compartment `splunk-export-compartment`
 ```
 Allow service FaaS to use all-resources in compartment splunk-export-compartment
@@ -71,13 +75,13 @@ Allow service FaaS to use all-resources in compartment splunk-export-compartment
 ```
 
 ### Create a VCN, Subnet & Security Lists
-
+- `Burger-Menu` --> `Networking` --> `Virtual Cloud Networks`
  - Use VCN Quick Start to Create a VCN `splunk-export-vcn` with Internet.
  - Connectivity Go to Security List and Create a `Stateful Ingress Rule` in the `Default Security list` to allow Ingress Traffic in  `TCP 443`
  - Go to Default Security List and verify if a `Stateful Egress Rule` is available in the `Default Security List` to allow egress traffic in  `all ports and all protocols`
 
 ### Create a Function Application
-
+- `Burger-Menu` --> `Developer Services` --> `Functions`
  - Create a Function Application `splunk-export-app` in the compartment `splunk-export-compartment` while selecting `splunk-export-vcn` and the `Public Subnet`
  - Setup Papertrail / OCI Logging Service to debug Function executions if required.  [Setup PaperTrail](https://papertrailapp.com/) , check them out. 
 
@@ -116,9 +120,11 @@ fn --verbose deploy splunk-export-app fetch-audit-events
 cd publish-to-splunk
 fn --verbose deploy splunk-export-app publish-to-splunk
 ```
+The Deploy Automatically Triggers an Fn Build and Fn Push to the Container registry repo setup for the functions.
 
 ### Create  an API Gateway 
- Create an API Gateway `splunk-export-apigw` in the compartment `splunk-export-compartment`while selecting `splunk-export-vcn` and the `Public Subnet`
+* `Burger-Menu` --> `Developer Services` --> `API Gateway`
+ * Create an API Gateway `splunk-export-apigw` in the compartment `splunk-export-compartment`while selecting `splunk-export-vcn` and the `Public Subnet`
 
 ### Create API Gateway Deployment Endpoints
 Map the endpoint as follows 
@@ -130,12 +136,21 @@ Map the endpoint as follows
 Note:The API Gateway is setup in this example with HTTPS without an Auth Mechanism , but this can be setup with an authorizer Function , that works with a simple Token mechanism
 ```
 ### Create Notification Channels 
+- `Burger-Menu` --> `Application Integration` --> `Notifications`
 - Create two notification channels `splunk-fetch-audit-event`  `splunk-publish-to-splunk`. Create subscriptions to Trigger the Functions
 
 ### Create Streaming
+- `Burger-Menu` --> `Analytics` --> `Streaming`
 ```
 Note: Using a Single Partition and Single Streaming endpoint for Audit, Can scale based on requirements
 ```
+| Stream Attribute |  value | 
+|------------------|--------|
+| stream-name| splunk-export-stream |
+| retention-period | 24 Hours | 
+| partitions | 1 | 
+| stream-pools | default-stream-pool |
+
 
 
 ### Set the Environment Variables for Each Function
