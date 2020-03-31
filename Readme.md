@@ -132,6 +132,11 @@ Note:The API Gateway is setup in this example with HTTPS without an Auth Mechani
 ### Create Notification Channels 
 - Create two notification channels `splunk-fetch-audit-event`  `splunk-publish-to-splunk`. Create subscriptions to Trigger the Functions
 
+### Create Streaming
+```
+Note: Using a Single Partition and Single Streaming endpoint for Audit, Can scale based on requirements
+```
+
 
 ### Set the Environment Variables for Each Function
 These environment variables help call other functions. One after the other. 
@@ -181,7 +186,7 @@ Copy the String  `<Random-Alphanumeric-String>.apigateway.us-phoenix-1.oci.custo
 | Method | GET |
 
 ```
-Note:The API Gateway is setup in this example with HTTPS without an Auth Mechanism , but this can be setup with an authorizer Function , that works with a simple Token mechanism. If Auth is setup , the token can be specified in the Header of the Health Check.
+Note:The API Gateway is setup in this example with HTTPS without an Auth Mechanism , but this can be setup with an authorizer Function , that works with a simple Token mechanism.If Auth is setup , the token can be specified in the Header of the Health Check.
 ```
 
 
