@@ -6,7 +6,6 @@ For Integrated SecOps , the SIEM plays an important component and Splunk is a ve
 ![](https://github.com/vamsiramakrishnan/splunk-export-audit/blob/master/media/TheSimpleArchitecture.png)
 A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splunk.
 
-
 ## Components
 
 -   The `OCI Audit API` is  queried for audit events every 2 minutes for all regions and all compartments relevant to the tenancy. 
@@ -18,6 +17,12 @@ A Scalable and Low Cost Splunk event exporter to publish OCI Audit Logs to Splun
 - The `Splunk HTTP event Collector` is a simplified mechanism that splunk provides to publish events 
 
 ![](https://github.com/vamsiramakrishnan/splunk-export-audit/blob/master/media/SimpleRepresentation.png)
+
+## Setup a Splunk Trial for Testing
+* Splunk provides a 15 day Cloud trial and the capability to store about 5GB worth of event data that you forward/export to Splunk. Here's the link to sign-up [Splunk Sign Up](https://www.splunk.com/en_us/download.html)
+* Select Splunk-Cloud, provide your data and Login to Splunk. 
+* To setup the HTTP Event Collector which we leverage, the solution refer to link [Setup HTTP event collector](https://docs.splunk.com/Documentation/Splunk/8.0.2/Data/UsetheHTTPEventCollector)
+* Points to note 
 
 ## Design Goals 
 ``` 
@@ -152,11 +157,10 @@ These environment variables help call other functions. One after the other.
 
 ## Invoke and Test !
 Invoke Once and the loop will stay active as long as the tenancy does continuously pushing events to Splunk . 
-
 ```
 curl --location --request GET '[apigateway-url].us-phoenix-1.oci.customer-oci.com/regions/listregions'
 ```
-If all is well , in papertrail
+If all is well in papertrail/ oci-function-logs/metrics, proceed.
 ## Health Checks for Scheduled Trigger
 Create a `Health Check` named `splunk-export-health-check` with the following settings 
 ### Target Settings
@@ -177,9 +181,7 @@ Copy the String  `<Random-Alphanumeric-String>.apigateway.us-phoenix-1.oci.custo
 | Method | GET |
 
 ```
-Note:The API Gateway is setup in this example with HTTPS without an Auth Mechanism , but this can be setup with an authorizer Function , that works with a simple Token mechanism. 
-
-If Auth is setup , the token can be specified in the Header.
+Note:The API Gateway is setup in this example with HTTPS without an Auth Mechanism , but this can be setup with an authorizer Function , that works with a simple Token mechanism. If Auth is setup , the token can be specified in the Header of the Health Check.
 ```
 
 
