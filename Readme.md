@@ -155,4 +155,4 @@ curl --location --request GET '[apigateway-url].us-phoenix-1.oci.customer-oci.co
 ```
 If all is well , in papertrail
 ## Health Checks for Scheduled Trigger
-Create a Health Check 
+Create a Health Check using the following 
