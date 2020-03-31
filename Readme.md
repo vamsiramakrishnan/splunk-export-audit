@@ -37,9 +37,8 @@ Zero maintenance
 4. Create a Dynamic Group `splunk-export-dg`
 5. Write appropriate IAM Policies at the tenancy level and compartment level.
 
-
 ### Create IAM Policies
-4. Create an IAM Policy `splunk-export-policy` with the following policy statements in the `root` compartment 
+ - Create an IAM Policy `splunk-export-policy` with the following policy statements in the `root` compartment 
 ```
 Allow group splunk-export-users to manage repos in tenancy
 Allow group splunk-export-users to read audit-events in tenancy
@@ -48,8 +47,7 @@ Allow group splunk-export-users to read compartments in tenancy
 Allow service FaaS to read repos in tenancy
 ```
 ### Create a Dynamic Group
-13. Create a Dynamic Group `splunk-export-dg`
-Instances that meet the criteria defined by any of these rules will be included in the group.
+ - Create a Dynamic Group `splunk-export-dg` Instances that meet the criteria defined by any of these rules will be included in the group.
 ```
 ANY {instance.compartment.id = [splunk-export-compartment OCID]}
 ANY {resource.type = 'ApiGateway', resource.compartment.id =[splunk-export-compartment OCID]}
@@ -68,21 +66,18 @@ Allow service FaaS to use all-resources in compartment splunk-export-compartment
 ```
 
 ### Create a VCN, Subnet & Security Lists
-5. Use VCN Quick Start to Create a VCN `splunk-export-vcn` with Internet Connectivity
-6. Go to Security List and Create a `Stateful Ingress Rule` in the `Default Security list` to allow Ingress Traffic in  `TCP 443`
-7. Go to Default Security List and verify if a `Stateful Egress Rule` is available in the `Default Security List` to allow egress traffic in `all ports and all protocols`
+
+ - Use VCN Quick Start to Create a VCN `splunk-export-vcn` with Internet.
+ - Connectivity Go to Security List and Create a `Stateful Ingress Rule` in the `Default Security list` to allow Ingress Traffic in  `TCP 443`
+ - Go to Default Security List and verify if a `Stateful Egress Rule` is available in the `Default Security List` to allow egress traffic in  `all ports and all protocols`
 
 ### Create a Function Application
-9. Create a Function Application `splunk-export-app` in the compartment `splunk-export-compartment` while selecting `splunk-export-vcn` and the `Public Subnet`
 
-### Create  an API Gateway 
-11. Create an API Gateway `splunk-export-apigw` in the compartment `splunk-export-compartment`while selecting `splunk-export-vcn` and the `Public Subnet`
-
-### Create Notification Channels 
-12. Create two notification channels `splunk-fetch-audit-event`  `splunk-publish-to-splunk`. Create subscriptions to Trigger Functions
+ - Create a Function Application `splunk-export-app` in the compartment `splunk-export-compartment` while selecting `splunk-export-vcn` and the `Public Subnet`
 
 ### Create a  OCIR Repo
-14. Create a  `Private` Repository `splunk-export-repo`
+
+ - Create a  `Private` Repository `splunk-export-repo`
 
 ### Configure Cloud Shell
 15. Setup Cloud Shell in your tenancy - [Link](https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/cloudshellgettingstarted.htm?TocPath=Developer%20Tools%20%7C%7CUsing%20Cloud%20Shell%7C_____0)
@@ -108,10 +103,19 @@ cd splunk-export-audit
 cd list-regions
 fn --verbose deploy splunk-export-app list-regions
 
-# Go into each Function and execute this command 
-cd ../list-compartments
-fn --verbose deploy splunk-export-app list-compartments
+cd fetch-audit-events
+fn --verbose deploy splunk-export-app fetch-audit-events
+
+cd publish-to-splunk
+fn --verbose deploy splunk-export-app publish-to-splunk
 ```
+
+### Create  an API Gateway 
+11. Create an API Gateway `splunk-export-apigw` in the compartment `splunk-export-compartment`while selecting `splunk-export-vcn` and the `Public Subnet`
+
+### Create Notification Channels 
+12. Create two notification channels `splunk-fetch-audit-event`  `splunk-publish-to-splunk`. Create subscriptions to Trigger the Functions
+
 ### Create API Gateway Deployment Endpoints
 Map the endpoint as follows 
  Deployment Name | Prefix| Method | Endpoint | Fn-Name
@@ -123,57 +127,24 @@ Map the endpoint as follows
 These environment variables help call other functions. One after the other. 
 | Fn-Name |Parameter Name  |  Description|  Example |
 |--|--|--|--| 
-|list-regions| list_compartments_fn_url | API gateway Endpoint/Route to call next Fn, list compartments  | https://api-gw-url/compartments/getcompartments
-|list-regions| list_regions_fn_url | Https Link to self , to call after delay for self perpetuation| https://api-gw-url/regions/listregions
-|list-regions| wait_loop_fn_url | The url of the Fn that makes a delayed Fn Call |https://api-gw-url/wait/waitloop
-|list-regions| wait_loop_time | Time until next time list-regions Fn is called again | 0-100 Seconds
-|fetch-audit-events | publish_to_splunk_fn_url| API gateway Endpoint/Route to call next function, Publish to Splunk | https://api-gw-url/publishtosplunk/pushtosplunk
+|list-regions| records_per_fn | Batch Size of Number of Events to be processed in one go by the Next Fn | 25-50
+|list-regions| audit_topic| OCID of Notifications topic used to trigger and notify the Fn fetch-audit-events  | ocid1.onstopic.oc1.phx.aaaaaaaa
+|list-regions | stream_ocid| OCID of the Stream used to Publish the list of compartments and regions from where Audit events will be fetched | ocid1.stream.oc1.phx.amaaaaaa
+|list-regions | streaming_endpoint| Endpoint of Streaming, depends on which region you provision Streaming | ocid1.stream.oc1.phx.amaaaaaa
+|fetch-audit-events | records_per_fn| Batch Size of Number of Events to be processed in one go by the Next Fn | 25-50
+|fetch-audit-events | splunk_topic| OCID of the Topic used to Notify& Trigger the publish-to-splunk Function| ocid1.onstopic.oc1.phx.aaaaaaaa
+|fetch-audit-events | stream_ocid| OCID of the Stream used to Publish the actual Audit Event payload | ocid1.stream.oc1.phx.amaaaaaa
+|fetch-audit-events | streaming_endpoint| Endpoint of Streaming, depends on which region you provision Streaming | ocid1.stream.oc1.phx.amaaaaaa
 |publish-to-splunk| source_source_name| The Source Name that you would like Splunk to see | oci-hec-event-collector
 | publish-to-splunk| source_host_name| The Source Hostname that you would like Splunk to see | oci-audit-logs
 |publish-to-splunk| splunk_url| The Splunk Cloud URL ( Append input to the beginning of your splunk cloud url, do not add any http/https etc.  | input-prd-p-hh6835czm4rp.cloud.splunk.com
 |publish-to-splunk| splunk_hec_token| The Token that is unqiue to that HEC  | TOKEN
 |publish-to-splunk| splunk_index_name| The index into which you'd like these logs to get aggregated | main
+|publish-to-splunk| stream_ocid| OCID of the Stream used to Publish the actual Audit Event payload | ocid1.stream.oc1.phx.amaaaaaa
+|publish-to-splunk| streaming_endpoint| Endpoint of Streaming, depends on which region you provision Streaming | ocid1.stream.oc1.phx.amaaaaaa
 
 ## Invoke !
 Invoke Once and the loop will stay active as long as the tenancy does continuously pushing events to Splunk . 
 ```
 curl --location --request GET '[apigateway-url].us-phoenix-1.oci.customer-oci.com/regions/listregions'
 ```
-
-## Rationale behind the Quickstart !
-
-1. The Fn accesses audit API across regions and compartments
-2. The Fn is hosted behind an API Gateway
-3. The Fn needs to make outbound internet requests to the Splunk endpoint 
-4. The Fn must fire and forget and not wait until other Fns Execute.
-
-### Setup Fn Environment
-#### Key Steps
-
- - Give your Functions-Users access to a Registry
- - Give your Functions-Users access to Network Resources
- - Create a Dynamic Group for Functions to access OCI API
- - Give your Functions dynamic group access to List Regions
- - Give your Functions dynamic group access to List Compartments
- - Give your Functions dynamic group access to List Fetch Audit events all over the tenancy. 
- 
-#### Links 
-- [Preparing your tenancy for Functions](https://docs.cloud.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsconfiguringtenancies.htm)
-- [IAM Policy Reference for Functions ](https://docs.cloud.oracle.com/en-us/iaas/Content/Functions/Tasks/functionscreatingpolicies.htm)
-
-
-### Setup API Gateway
-#### Key Steps
-
- - Give your API-Gateway users access to Functions 
- - Give your API-Gateway users access to Network Resources 
- - Create a Dynamic Group for API - Gateway to invoke functions.
- - Give your API-Gateway dynamic group access to manage / invoke Functions
-#### Links 
- - [Preparing your tenancy for API Gateway](https://docs.cloud.oracle.com/en-us/iaas/Content/APIGateway/Concepts/apigatewayprerequisites.htm) .
-- [Dynamic IAM Policy for API Gateway to manage
-   Functions](https://docs.cloud.oracle.com/en-us/iaas/Content/APIGateway/Tasks/apigatewaycreatingpolicies.htm#dynamic-group-policy)
-
-### [](https://github.com/vamsiramakrishnan/splunk-export-audit#setup-a-fn-development-environment)Setup a Fn Development Environment
-
-[Install and Setup The Fn-CLI](https://fnproject.io/tutorials/install/#DownloadandInstalltheFnCLI)
