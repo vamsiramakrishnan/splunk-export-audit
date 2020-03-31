@@ -155,4 +155,22 @@ curl --location --request GET '[apigateway-url].us-phoenix-1.oci.customer-oci.co
 ```
 If all is well , in papertrail
 ## Health Checks for Scheduled Trigger
-Create a Health Check using the following 
+Create a `Health Check` with the following settings 
+### Target Settings
+Get the API-Gateway URL where the list-regions Fn is deployed. 
+**Example**
+``` https://<Random-Alphanumeric-String>.apigateway.us-phoenix-1.oci.customer-oci.com/regions/listregions```
+Copy the String  `<Random-Alphanumeric-String>.apigateway.us-phoenix-1.oci.customer-oci.com` and ignore the rest
+### Other Health Check Settings
+| Field | Setting |
+|-------|---------|
+|Vantage Point| *Select any One* | 
+| Request Type | HTTP | 
+| Protocols | HTTPS | 
+| Port | 443 | 
+| Path | /regions/listregions | 
+| Timeout | 30s |
+| Interval | 5 Min | 
+| Method | GET |
+
+
