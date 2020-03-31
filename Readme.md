@@ -74,6 +74,7 @@ Allow service FaaS to use all-resources in compartment splunk-export-compartment
 ### Create a Function Application
 
  - Create a Function Application `splunk-export-app` in the compartment `splunk-export-compartment` while selecting `splunk-export-vcn` and the `Public Subnet`
+ - Setup Papertrail / OCI Logging Service to debug Function executions if required.  [Setup PaperTrail](https://papertrailapp.com/) , check them out. 
 
 ### Create a  OCIR Repo
 
@@ -96,6 +97,7 @@ fn update context oracle.compartment-id [splunk-export-compartment-ocid]
 fn update context api-url https://functions.[region-name].oraclecloud.com
 fn update context registry [YOUR-TENANCY-NAMESPACE]/[splunk-export-repo]
 ```
+
 ### Deploy the Functions
 Each folder within the repo represents a function , go to each folder and deploy the function using the the `fn --verbose deploy `
 ```
@@ -125,6 +127,8 @@ Map the endpoint as follows
 
 ### Set the Environment Variables for Each Function
 These environment variables help call other functions. One after the other. 
+
+
 | Fn-Name |Parameter Name  |  Description|  Example |
 |--|--|--|--| 
 |list-regions| records_per_fn | Batch Size of Number of Events to be processed in one go by the Next Fn | 25-50
@@ -143,8 +147,12 @@ These environment variables help call other functions. One after the other.
 |publish-to-splunk| stream_ocid| OCID of the Stream used to Publish the actual Audit Event payload | ocid1.stream.oc1.phx.amaaaaaa
 |publish-to-splunk| streaming_endpoint| Endpoint of Streaming, depends on which region you provision Streaming | ocid1.stream.oc1.phx.amaaaaaa
 
-## Invoke !
+## Invoke and Test !
 Invoke Once and the loop will stay active as long as the tenancy does continuously pushing events to Splunk . 
+
 ```
 curl --location --request GET '[apigateway-url].us-phoenix-1.oci.customer-oci.com/regions/listregions'
 ```
+If all is well , in papertrail
+## Health Checks for Scheduled Trigger
+Create a Health Check 
