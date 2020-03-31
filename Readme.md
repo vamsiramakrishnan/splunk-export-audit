@@ -113,16 +113,19 @@ fn --verbose deploy splunk-export-app publish-to-splunk
 ```
 
 ### Create  an API Gateway 
-11. Create an API Gateway `splunk-export-apigw` in the compartment `splunk-export-compartment`while selecting `splunk-export-vcn` and the `Public Subnet`
-
-### Create Notification Channels 
-12. Create two notification channels `splunk-fetch-audit-event`  `splunk-publish-to-splunk`. Create subscriptions to Trigger the Functions
+ Create an API Gateway `splunk-export-apigw` in the compartment `splunk-export-compartment`while selecting `splunk-export-vcn` and the `Public Subnet`
 
 ### Create API Gateway Deployment Endpoints
 Map the endpoint as follows 
  Deployment Name | Prefix| Method | Endpoint | Fn-Name
 --|--|--|--|--|
  list-regions | regions | GET | /listregions |  list-regions|
+
+```
+Note:The API Gateway is setup in this example with HTTPS without an Auth Mechanism , but this can be setup with an authorizer Function , that works with a simple Token mechanism
+```
+### Create Notification Channels 
+- Create two notification channels `splunk-fetch-audit-event`  `splunk-publish-to-splunk`. Create subscriptions to Trigger the Functions
 
 
 ### Set the Environment Variables for Each Function
@@ -155,7 +158,7 @@ curl --location --request GET '[apigateway-url].us-phoenix-1.oci.customer-oci.co
 ```
 If all is well , in papertrail
 ## Health Checks for Scheduled Trigger
-Create a `Health Check` with the following settings 
+Create a `Health Check` named `splunk-export-health-check` with the following settings 
 ### Target Settings
 Get the API-Gateway URL where the list-regions Fn is deployed. 
 **Example**
@@ -172,5 +175,11 @@ Copy the String  `<Random-Alphanumeric-String>.apigateway.us-phoenix-1.oci.custo
 | Timeout | 30s |
 | Interval | 5 Min | 
 | Method | GET |
+
+```
+Note:The API Gateway is setup in this example with HTTPS without an Auth Mechanism , but this can be setup with an authorizer Function , that works with a simple Token mechanism. 
+
+If Auth is setup , the token can be specified in the Header.
+```
 
 
