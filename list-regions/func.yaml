@@ -1,6 +1,6 @@
 schema_version: 20180708
 name: list-regions
-version: 0.0.79
+version: 0.0.81
 runtime: python
 entrypoint: /python/bin/fdk /function/func.py handler
 memory: 128

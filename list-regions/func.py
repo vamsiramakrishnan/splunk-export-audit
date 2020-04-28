@@ -22,7 +22,7 @@ def handler(ctx, data: io.BytesIO = None):
     signer = auth.signers.get_resource_principals_signer()
     regions = util.to_dict(get_regions(signer))
     compartments = util.to_dict(get_compartments(signer))
-    activeCompartments = [compartment for compartment in compartments if compartment['lifecyle_state'] == 'ACTIVE']
+    activeCompartments = [compartment for compartment in compartments if compartment['lifecycle_state'] == 'ACTIVE']
     compartment_ocids = list(map(itemgetter('id'),activeCompartments))
     region_names = list(map(itemgetter('region_name'),regions))
     end_time_object = datetime.datetime.utcnow()
@@ -65,7 +65,6 @@ def get_compartments(signer):
         compartment_id=signer.tenancy_id,
         compartment_id_in_subtree=True,
         access_level="ACCESSIBLE").data
-    
     
     return result
 
