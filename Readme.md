@@ -43,16 +43,6 @@ This quickstart assumes you have working understanding of basic principles of OC
 4. Create a Dynamic Group `splunk-export-dg`
 5. Write appropriate IAM Policies at the tenancy level and compartment level.
 
-### Create IAM Policies
-- `Burger-Menu` --> `Identity` --> `Policies`
- - Create an IAM Policy `splunk-export-policy` with the following policy statements in the `root` compartment 
-```
-Allow group splunk-export-users to manage repos in tenancy
-Allow group splunk-export-users to read audit-events in tenancy
-Allow group splunk-export-users to read tenancies in tenancy
-Allow group splunk-export-users to read compartments in tenancy
-Allow service FaaS to read repos in tenancy
-```
 ### Create a Dynamic Group
 - `Burger-Menu` --> `Identity` --> `Dynamic Groups`
  - Create a Dynamic Group `splunk-export-dg` Instances that meet the criteria defined by any of these rules will be included in the group.
@@ -61,12 +51,32 @@ ANY {instance.compartment.id = [splunk-export-compartment OCID]}
 ANY {resource.type = 'ApiGateway', resource.compartment.id =[splunk-export-compartment OCID]}
 ANY {resource.type = 'fnfunc', resource.compartment.id = [splunk-export-compartment OCID]}
 ```
-### Create Dynamic Group IAM Policy
+
+### Create Tenancy IAM policy - Splunk Export Group 
 - `Burger-Menu` --> `Identity` --> `Policies`
-Create this Policy inside the compartment `splunk-export-compartment`
+ - Create an IAM Policy `splunk-export-tenancy-policy` with the following policy statements in the `root` compartment 
+```
+Allow group splunk-export-users to manage repos in tenancy
+Allow group splunk-export-users to read audit-events in tenancy
+Allow group splunk-export-users to read tenancies in tenancy
+Allow group splunk-export-users to read compartments in tenancy
+Allow service FaaS to read repos in tenancy
+```
+
+###  Create Tenancy IAM policy - Splunk Export Dynamic Group 
+- `Burger-Menu` --> `Identity` --> `Policies`
+ - Create an IAM Policy `splunk-export-dg-tenancy-policy` with the following policy statements in the `root` compartment 
+```
+Allow dynamic-group splunk-export-dg to read audit-events in tenancy
+Allow dynamic-group splunk-export-dg to read tenancies in tenancy
+Allow dynamic-group splunk-export-dg to read compartments in tenancy
+```
+
+### Create Compartment Level IAM Policy
+- `Burger-Menu` --> `Identity` --> `Policies`
+Create an IAM Policy `splunk-export-compartment-dg-policy` inside the compartment `splunk-export-compartment`
 ```
 Allow service FaaS to use all-resources in compartment splunk-export-compartment
-Allow dynamic-group splunk-export-users to manage all-resources in compartment splunk-export-compartment
 Allow dynamic-group splunk-export-dg to use ons-topics in compartment splunk-export-compartment
 Allow dynamic-group splunk-export-dg to use stream-pull in compartment splunk-export-compartment
 Allow dynamic-group splunk-export-dg to use stream-push in compartment splunk-export-compartment
@@ -158,11 +168,11 @@ These environment variables help call other functions. One after the other.
 
 | Fn-Name |Parameter Name  |  Description|  Example |
 |--|--|--|--| 
-|list-regions| records_per_fn | Batch Size of Number of Events to be processed in one go by the Next Fn | 25-50
+|list-regions| records_per_fn | Batch Size of Number of Events to be processed in one go by the Next Fn | 50
 |list-regions| audit_topic| OCID of Notifications topic used to trigger and notify the Fn fetch-audit-events  | ocid1.onstopic.oc1.phx.aaaaaaaa
 |list-regions | stream_ocid| OCID of the Stream used to Publish the list of compartments and regions from where Audit events will be fetched | ocid1.stream.oc1.phx.amaaaaaa
 |list-regions | streaming_endpoint| Endpoint of Streaming, depends on which region you provision Streaming | ocid1.stream.oc1.phx.amaaaaaa
-|fetch-audit-events | records_per_fn| Batch Size of Number of Events to be processed in one go by the Next Fn | 25-50
+|fetch-audit-events | records_per_fn| Batch Size of Number of Events to be processed in one go by the Next Fn | 30
 |fetch-audit-events | splunk_topic| OCID of the Topic used to Notify& Trigger the publish-to-splunk Function| ocid1.onstopic.oc1.phx.aaaaaaaa
 |fetch-audit-events | stream_ocid| OCID of the Stream used to Publish the actual Audit Event payload | ocid1.stream.oc1.phx.amaaaaaa
 |fetch-audit-events | streaming_endpoint| Endpoint of Streaming, depends on which region you provision Streaming | ocid1.stream.oc1.phx.amaaaaaa

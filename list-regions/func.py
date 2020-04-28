@@ -22,7 +22,8 @@ def handler(ctx, data: io.BytesIO = None):
     signer = auth.signers.get_resource_principals_signer()
     regions = get_regions(signer)
     compartments = get_compartments(signer)
-    compartment_ocids = list(map(itemgetter('id'),util.to_dict(compartments)))
+    activeCompartments = [compartment for compartment in compartments if compartment['lifecyle_state'] == 'ACTIVE']
+    compartment_ocids = list(map(itemgetter('id'),util.to_dict(activeCompartments)))
     region_names = list(map(itemgetter('region_name'),util.to_dict(regions)))
     end_time_object = datetime.datetime.utcnow()
     start_time_object = end_time_object + datetime.timedelta(days=0, seconds=0, microseconds=0, milliseconds=0, minutes=-5, hours=0, weeks=0)
@@ -64,6 +65,8 @@ def get_compartments(signer):
         compartment_id=signer.tenancy_id,
         compartment_id_in_subtree=True,
         access_level="ACCESSIBLE").data
+    
+    
     return result
 
 def publish_to_stream(signer, streaming_endpoint, stream_ocid, region_names, compartment_ocids, start_time, end_time):
