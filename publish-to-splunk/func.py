@@ -23,7 +23,7 @@ def handler(ctx, data: io.BytesIO = None):
         token=os.environ["splunk_hec_token"],
         host=os.environ["source_host_name"],
         input_type="json",
-        http_event_port="8088",
+        http_event_port=os.environ["splunk_hec_port"],
         http_event_server=os.environ["splunk_url"],
     )
     oci_audit_events_JSON.SSL_verify = False
