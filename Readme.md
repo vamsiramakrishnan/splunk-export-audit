@@ -1,5 +1,35 @@
 # Splunk-Export-Audit
 
+## Table Of Contents
+- [Splunk-Export-Audit](#splunk-export-audit)
+  - [Table Of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Components](#components)
+  - [Setup a Splunk Trial for Testing](#setup-a-splunk-trial-for-testing)
+  - [Design Goals](#design-goals)
+  - [Quickstart For Setup On OCI Side](#quickstart-for-setup-on-oci-side)
+    - [Create Compartments and Groups](#create-compartments-and-groups)
+    - [Create a Dynamic Group](#create-a-dynamic-group)
+    - [Create Tenancy IAM policy - Splunk Export Group](#create-tenancy-iam-policy---splunk-export-group)
+    - [Create Tenancy IAM policy - Splunk Export Dynamic Group](#create-tenancy-iam-policy---splunk-export-dynamic-group)
+    - [Create Compartment Level IAM Policy](#create-compartment-level-iam-policy)
+    - [Create a VCN, Subnet & Security Lists](#create-a-vcn-subnet--security-lists)
+    - [Configure Cloud Shell](#configure-cloud-shell)
+    - [The Cloud Shell](#the-cloud-shell)
+    - [Create a Function Application](#create-a-function-application)
+    - [Getting Started with Fn Deployment](#getting-started-with-fn-deployment)
+    - [Step-8](#step-8)
+    - [Deploy the Functions](#deploy-the-functions)
+    - [Create  an API Gateway](#create-an-api-gateway)
+    - [Create API Gateway Deployment Endpoints](#create-api-gateway-deployment-endpoints)
+    - [Create Notification Channels](#create-notification-channels)
+    - [Create Streaming](#create-streaming)
+    - [Set the Environment Variables for Each Function](#set-the-environment-variables-for-each-function)
+  - [Invoke and Test !](#invoke-and-test)
+  - [Health Checks for Scheduled Trigger](#health-checks-for-scheduled-trigger)
+    - [Target Settings](#target-settings)
+
+
 ## Introduction 
 For Integrated SecOps, the SIEM plays an important component and Splunk is a very popular SIEM solution. The setup described below helps in near-realtime, zero-touch audit-log export to the Splunk Http event Collector for Indexing and Analysis.The same architecture can be used to export to almost any SIEM as it leverages the HTTP Event Collector.
 
