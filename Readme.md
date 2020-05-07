@@ -231,6 +231,7 @@ These environment variables help call other functions. One after the other.
 | publish-to-splunk  | splunk_index_name  | The index into which you'd like these logs to get aggregated                                                    | main                                      |
 | publish-to-splunk  | stream_ocid        | OCID of the Stream used to Publish the actual Audit Event payload                                               | ocid1.stream.oc1.phx.amaaaaaa             |
 | publish-to-splunk  | streaming_endpoint | Endpoint of Streaming, depends on which region you provision Streaming                                          | ocid1.stream.oc1.phx.amaaaaaa             |
+| publish-to-splunk  | splunk_hec_port    | The listener port of the HEC Endpoint of Splunk                                                                 | 8088                                      |
 
 ## Invoke and Test !
 Invoke Once and the loop will stay active as long as the tenancy does continuously pushing events to Splunk . 
@@ -259,6 +260,5 @@ Copy the String  `<Random-Alphanumeric-String>.apigateway.us-phoenix-1.oci.custo
 
 ```
 Note:The API Gateway is setup in this example with HTTPS without an Auth Mechanism , but this can be setup with an authorizer Function , that works with a simple Token mechanism.If Auth is setup , the token can be specified in the Header of the Health Check.
+
 ```
-
-
